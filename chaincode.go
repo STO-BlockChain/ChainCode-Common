@@ -6,7 +6,7 @@
 package main
 
 import (
-	"github.com/STO-BlockChain/Common/controller"
+	"github.com/STO-BlockChain/ChainCode-Common/controller"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-protos-go/peer"
 )

@@ -1,4 +1,4 @@
-module github.com/STO-BlockChain/Common
+module github.com/STO-BlockChain/ChainCode-Common
 
 go 1.17
 

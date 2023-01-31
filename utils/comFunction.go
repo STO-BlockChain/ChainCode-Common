@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	model "github.com/STO-BlockChain/Common/model"
+	model "github.com/STO-BlockChain/ChainCode-Common/model"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-protos-go/peer"
 )
