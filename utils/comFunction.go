@@ -4,25 +4,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"runtime"
 	"strconv"
-	"strings"
 
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	sc "github.com/hyperledger/fabric/protos/peer"
-
-	"github.com/jinsan74/Erc20/model"
-	"github.com/jinsan74/Erc20/wallet"
+	model "github.com/STO-BlockChain/Common/model"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
+	"github.com/hyperledger/fabric-protos-go/peer"
 )
 
-var logger = shim.NewLogger("sto-logger")
-
 // DoTransfer is 토큰 Transfer
-func DoTransfer(stub shim.ChaincodeStubInterface, transParam string, tokenName string) sc.Response {
+func DoTransfer(stub shim.ChaincodeStubInterface, transParam string, tokenName string) peer.Response {
 
 	_, orgParam := stub.GetFunctionAndParameters()
 
-	walletMeta := wallet.WalletMeta{}
+	walletMeta := model.WalletMeta{}
 	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
 	walletMeta.Transdata = transParam
 
@@ -37,7 +31,7 @@ func DoTransfer(stub shim.ChaincodeStubInterface, transParam string, tokenName s
 }
 
 // DoBalanceOf is 토큰 balanceOf
-func DoBalanceOf(stub shim.ChaincodeStubInterface, toaddress string, tokenName string) sc.Response {
+func DoBalanceOf(stub shim.ChaincodeStubInterface, toaddress string, tokenName string) peer.Response {
 
 	// 지갑형 트랜잭션 VAILD WALLET CHECK 및 지갑주소/파라미터 파싱
 	chainCodeFunc := "balanceOf"
@@ -48,16 +42,16 @@ func DoBalanceOf(stub shim.ChaincodeStubInterface, toaddress string, tokenName s
 	if response.Status != shim.OK {
 		errStr := fmt.Sprintf("Failed to balanceOf chaincode. Got error: %s", string(response.Payload))
 		fmt.Printf(errStr)
-		return sc.Response{Status: 501, Message: "balanceOf Fail!", Payload: nil}
+		return peer.Response{Status: 501, Message: "balanceOf Fail!", Payload: nil}
 	}
 
 	return response
 }
 
 // DoTokenFunc is 토큰 함수 실행 (burn, mint)
-func DoTokenFunc(stub shim.ChaincodeStubInterface, funcName string, transParam string, tokenName string) sc.Response {
+func DoTokenFunc(stub shim.ChaincodeStubInterface, funcName string, transParam string, tokenName string) peer.Response {
 	_, orgParam := stub.GetFunctionAndParameters()
-	walletMeta := wallet.WalletMeta{}
+	walletMeta := model.WalletMeta{}
 	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
 	walletMeta.Transdata = transParam
 	realTrans, _ := json.Marshal(walletMeta)
@@ -69,10 +63,10 @@ func DoTokenFunc(stub shim.ChaincodeStubInterface, funcName string, transParam s
 }
 
 // DoTransferMulti is 토큰 TransferMulti
-func DoTransferMulti(stub shim.ChaincodeStubInterface, stTransferMetaArr []wallet.TransferMeta, tokenName string) sc.Response {
+func DoTransferMulti(stub shim.ChaincodeStubInterface, stTransferMetaArr []model.TransferMeta, tokenName string) peer.Response {
 
 	_, orgParam := stub.GetFunctionAndParameters()
-	walletMeta := wallet.WalletMeta{}
+	walletMeta := model.WalletMeta{}
 	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
 	stTransferStr, _ := json.Marshal(stTransferMetaArr)
 	walletMeta.Transjdata = string(stTransferStr)
@@ -86,16 +80,16 @@ func DoTransferMulti(stub shim.ChaincodeStubInterface, stTransferMetaArr []walle
 	if response.Status != shim.OK {
 		errStr := fmt.Sprintf("Failed to transfer chaincode. Got error: %s", string(response.Payload))
 		fmt.Printf(errStr)
-		return sc.Response{Status: 501, Message: "transfer Fail!", Payload: nil}
+		return peer.Response{Status: 501, Message: "transfer Fail!", Payload: nil}
 	}
 
 	return response
 }
 
-func DoTransferMultiNoneSafety(stub shim.ChaincodeStubInterface, stTransferMetaArr []wallet.TransferMeta, tokenName string) sc.Response {
+func DoTransferMultiNoneSafety(stub shim.ChaincodeStubInterface, stTransferMetaArr []model.TransferMeta, tokenName string) peer.Response {
 
 	_, orgParam := stub.GetFunctionAndParameters()
-	walletMeta := wallet.WalletMeta{}
+	walletMeta := model.WalletMeta{}
 	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
 	stTransferStr, _ := json.Marshal(stTransferMetaArr)
 	walletMeta.Transjdata = string(stTransferStr)
@@ -109,16 +103,16 @@ func DoTransferMultiNoneSafety(stub shim.ChaincodeStubInterface, stTransferMetaA
 	if response.Status != shim.OK {
 		errStr := fmt.Sprintf("Failed to transfer chaincode. Got error: %s", string(response.Payload))
 		fmt.Printf(errStr)
-		return sc.Response{Status: 501, Message: "transfer Fail!", Payload: nil}
+		return peer.Response{Status: 501, Message: "transfer Fail!", Payload: nil}
 	}
 
 	return response
 }
 
-func DoTransferMultiNoneSafetyN(stub shim.ChaincodeStubInterface, stTransferMetaArr []wallet.TransferMetaN, tokenName string) sc.Response {
+func DoTransferMultiNoneSafetyN(stub shim.ChaincodeStubInterface, stTransferMetaArr []model.TransferMetaN, tokenName string) peer.Response {
 
 	_, orgParam := stub.GetFunctionAndParameters()
-	walletMeta := wallet.WalletMeta{}
+	walletMeta := model.WalletMeta{}
 	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
 	stTransferStr, _ := json.Marshal(stTransferMetaArr)
 	walletMeta.Transjdata = string(stTransferStr)
@@ -132,35 +126,11 @@ func DoTransferMultiNoneSafetyN(stub shim.ChaincodeStubInterface, stTransferMeta
 	if response.Status != shim.OK {
 		errStr := fmt.Sprintf("Failed to transfer chaincode. Got error: %s", string(response.Payload))
 		//fmt.Printf(errStr)
-		return sc.Response{Status: 501, Message: errStr, Payload: nil}
+		return peer.Response{Status: 501, Message: errStr, Payload: nil}
 	}
 
 	return response
 }
-
-// DoTransferMulti is 토큰 TransferMulti
-// func DoTransferMultiCheck(stub shim.ChaincodeStubInterface, stTransferMetaArr []wallet.TransferMeta, tokenName string) sc.Response {
-
-// 	_, orgParam := stub.GetFunctionAndParameters()
-// 	walletMeta := wallet.WalletMeta{}
-// 	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
-// 	stTransferStr, _ := json.Marshal(stTransferMetaArr)
-// 	walletMeta.Transjdata = string(stTransferStr)
-// 	realTrans, _ := json.Marshal(walletMeta)
-
-// 	chainCodeFunc := "transferMultiCheck"
-// 	invokeArgs := ToChaincodeArgs(chainCodeFunc, string(realTrans))
-// 	channel := stub.GetChannelID()
-// 	response := stub.InvokeChaincode(tokenName, invokeArgs, channel)
-
-// 	if response.Status != shim.OK {
-// 		errStr := fmt.Sprintf("Failed to transfer chaincode. Got error: %s", string(response.Payload))
-// 		fmt.Printf(errStr)
-// 		return sc.Response{Status: 501, Message: "transfer check Fail!", Payload: nil}
-// 	}
-
-// 	return response
-// }
 
 // ToChaincodeArgs is 외부 체인코드 호출시 파라미터 만드는 함수
 func ToChaincodeArgs(args ...string) [][]byte {
@@ -181,7 +151,7 @@ func GetNowDt(stub shim.ChaincodeStubInterface) int64 {
 
 // JsonFromQueryResponse 은 iterator 를 json 으로 변환
 // query result iterator 와 응답 메타데이터를 넘기면, 리턴할 json 으로 변환해 줌
-func JsonFromQueryResponse(resultsIterator shim.StateQueryIteratorInterface, responseMetadata *sc.QueryResponseMetadata) (*bytes.Buffer, error) {
+func JsonFromQueryResponse(resultsIterator shim.StateQueryIteratorInterface, responseMetadata *peer.QueryResponseMetadata) (*bytes.Buffer, error) {
 	// buffer is a JSON array containing QueryResults
 	var buffer bytes.Buffer
 	//buffer.WriteString("[")
@@ -218,7 +188,7 @@ func JsonFromQueryResponse(resultsIterator shim.StateQueryIteratorInterface, res
 }
 
 // SaveMetaData is 데이터 저장
-func SaveMetaData(stub shim.ChaincodeStubInterface, dataKey string, metaDataBytes []byte) sc.Response {
+func SaveMetaData(stub shim.ChaincodeStubInterface, dataKey string, metaDataBytes []byte) peer.Response {
 
 	// 저장
 	err := stub.PutState(dataKey, metaDataBytes)
@@ -273,65 +243,5 @@ func GetFundAdmin(stub shim.ChaincodeStubInterface, fundid string) string {
 
 	fmt.Println("FUND ADMIN:", fundid, address)
 
-	//fundMeta := FundMeta{}
-	//json.Unmarshal([]byte(response.Payload), &fundMeta)
-
 	return address
-}
-
-func IsFundAdmin(stub shim.ChaincodeStubInterface, fundid string, owneraddress string) bool {
-	adminaddress := GetFundAdmin(stub, fundid)
-	if adminaddress == owneraddress {
-		return true
-	} else {
-		return false
-	}
-}
-
-// shim 로그를 사용하기 위해서는 반드시 초기화가 필요함
-func InitLog() {
-	logger.SetLevel(shim.LogInfo)
-}
-
-// 로그 레벨을 변경
-func SetLogLevel(logLevel string) bool {
-	if logLevel == "INFO" {
-		logger.SetLevel(shim.LogInfo)
-	} else if logLevel == "DEBUG" {
-		logger.SetLevel(shim.LogDebug)
-	} else if logLevel == "ERROR" {
-		logger.SetLevel(shim.LogError)
-	} else {
-		return false
-	}
-	return true
-}
-
-func GetCallerInfo() (funcName string, line int) {
-	_, fn, line, ok := runtime.Caller(2)
-	if ok {
-		if index := strings.LastIndex(fn, "/"); index >= 0 {
-			fn = fn[index+1:]
-		}
-	} else {
-		fn = "???"
-		line = 1
-	}
-
-	return fn, line
-}
-
-func InfoLogger(infoLog string) {
-	funcName, line := GetCallerInfo()
-	logger.Infof("[%s:%d] %s\n", funcName, line, infoLog)
-}
-
-func DebugLogger(debugLog string) {
-	funcName, line := GetCallerInfo()
-	logger.Debugf("[%s:%d] %s\n", funcName, line, debugLog)
-}
-
-func ErrorLogger(errorLog string) {
-	funcName, line := GetCallerInfo()
-	logger.Errorf("[%s:%d] %s\n", funcName, line, errorLog)
 }
