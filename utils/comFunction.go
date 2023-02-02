@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	model "github.com/STO-BlockChain/ChainCode-Common/model"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
@@ -15,7 +16,12 @@ import (
 func DoTransfer(stub shim.ChaincodeStubInterface, transParam string, tokenName string) peer.Response {
 
 	chainCodeFunc := "transfer"
-	invokeArgs := ToChaincodeArgs(chainCodeFunc, transParam)
+
+	stTransferParamArr := strings.Split(transParam, ",")
+	stTransferStr, _ := json.Marshal(stTransferParamArr)
+
+	fmt.Println("STRANFER PARAM:" + string(stTransferStr))
+	invokeArgs := ToChaincodeArgs(chainCodeFunc, string(stTransferStr))
 	channel := stub.GetChannelID()
 	response := stub.InvokeChaincode(tokenName, invokeArgs, channel)
 
