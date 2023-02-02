@@ -14,16 +14,8 @@ import (
 // DoTransfer is 토큰 Transfer
 func DoTransfer(stub shim.ChaincodeStubInterface, transParam string, tokenName string) peer.Response {
 
-	_, orgParam := stub.GetFunctionAndParameters()
-
-	walletMeta := model.WalletMeta{}
-	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
-	walletMeta.Transdata = transParam
-
-	realTrans, _ := json.Marshal(walletMeta)
-
 	chainCodeFunc := "transfer"
-	invokeArgs := ToChaincodeArgs(chainCodeFunc, string(realTrans))
+	invokeArgs := ToChaincodeArgs(chainCodeFunc, transParam)
 	channel := stub.GetChannelID()
 	response := stub.InvokeChaincode(tokenName, invokeArgs, channel)
 
@@ -50,13 +42,8 @@ func DoBalanceOf(stub shim.ChaincodeStubInterface, toaddress string, tokenName s
 
 // DoTokenFunc is 토큰 함수 실행 (burn, mint)
 func DoTokenFunc(stub shim.ChaincodeStubInterface, funcName string, transParam string, tokenName string) peer.Response {
-	_, orgParam := stub.GetFunctionAndParameters()
-	walletMeta := model.WalletMeta{}
-	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
-	walletMeta.Transdata = transParam
-	realTrans, _ := json.Marshal(walletMeta)
 	chainCodeFunc := funcName
-	invokeArgs := ToChaincodeArgs(chainCodeFunc, string(realTrans))
+	invokeArgs := ToChaincodeArgs(chainCodeFunc, transParam)
 	channel := stub.GetChannelID()
 	response := stub.InvokeChaincode(tokenName, invokeArgs, channel)
 	return response
