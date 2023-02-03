@@ -51,17 +51,11 @@ func DoTokenFunc(stub shim.ChaincodeStubInterface, funcName string, transParam s
 }
 
 // DoTransferMulti is 토큰 TransferMulti
-func DoTransferMulti(stub shim.ChaincodeStubInterface, stTransferMetaArr []model.TransferMeta, tokenName string) peer.Response {
-
-	_, orgParam := stub.GetFunctionAndParameters()
-	walletMeta := model.WalletMeta{}
-	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
-	stTransferStr, _ := json.Marshal(stTransferMetaArr)
-	walletMeta.Transjdata = string(stTransferStr)
-	realTrans, _ := json.Marshal(walletMeta)
+func DoTransferMulti(stub shim.ChaincodeStubInterface, callerAddress string, stTransferMetaArr []model.TransferMeta, tokenName string) peer.Response {
 
 	chainCodeFunc := "transferMulti"
-	invokeArgs := ToChaincodeArgs(chainCodeFunc, string(realTrans))
+	stTransferStr, _ := json.Marshal(stTransferMetaArr)
+	invokeArgs := ToChaincodeArgs(chainCodeFunc, callerAddress, string(stTransferStr))
 	channel := stub.GetChannelID()
 	response := stub.InvokeChaincode(tokenName, invokeArgs, channel)
 
@@ -74,17 +68,11 @@ func DoTransferMulti(stub shim.ChaincodeStubInterface, stTransferMetaArr []model
 	return response
 }
 
-func DoTransferMultiNoneSafety(stub shim.ChaincodeStubInterface, stTransferMetaArr []model.TransferMeta, tokenName string) peer.Response {
+func DoTransferMultiNoneSafety(stub shim.ChaincodeStubInterface, callerAddress string, stTransferMetaArr []model.TransferMeta, tokenName string) peer.Response {
 
-	_, orgParam := stub.GetFunctionAndParameters()
-	walletMeta := model.WalletMeta{}
-	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
+	chainCodeFunc := "transferMultiNoneSafety"
 	stTransferStr, _ := json.Marshal(stTransferMetaArr)
-	walletMeta.Transjdata = string(stTransferStr)
-	realTrans, _ := json.Marshal(walletMeta)
-
-	chainCodeFunc := "transferMultiNonSafety"
-	invokeArgs := ToChaincodeArgs(chainCodeFunc, string(realTrans))
+	invokeArgs := ToChaincodeArgs(chainCodeFunc, callerAddress, string(stTransferStr))
 	channel := stub.GetChannelID()
 	response := stub.InvokeChaincode(tokenName, invokeArgs, channel)
 
@@ -99,22 +87,16 @@ func DoTransferMultiNoneSafety(stub shim.ChaincodeStubInterface, stTransferMetaA
 
 func DoTransferMultiNoneSafetyN(stub shim.ChaincodeStubInterface, stTransferMetaArr []model.TransferMetaN, tokenName string) peer.Response {
 
-	_, orgParam := stub.GetFunctionAndParameters()
-	walletMeta := model.WalletMeta{}
-	json.Unmarshal([]byte(orgParam[0]), &walletMeta)
-	stTransferStr, _ := json.Marshal(stTransferMetaArr)
-	walletMeta.Transjdata = string(stTransferStr)
-	realTrans, _ := json.Marshal(walletMeta)
-
 	chainCodeFunc := "transferMultiNoneSafetyN"
-	invokeArgs := ToChaincodeArgs(chainCodeFunc, string(realTrans))
+	stTransferStr, _ := json.Marshal(stTransferMetaArr)
+	invokeArgs := ToChaincodeArgs(chainCodeFunc, string(stTransferStr))
 	channel := stub.GetChannelID()
 	response := stub.InvokeChaincode(tokenName, invokeArgs, channel)
 
 	if response.Status != shim.OK {
 		errStr := fmt.Sprintf("Failed to transfer chaincode. Got error: %s", string(response.Payload))
-		//fmt.Printf(errStr)
-		return peer.Response{Status: 501, Message: errStr, Payload: nil}
+		fmt.Printf(errStr)
+		return peer.Response{Status: 501, Message: "transfer Fail!", Payload: nil}
 	}
 
 	return response
