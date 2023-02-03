@@ -11,15 +11,3 @@ type TransferMetaN struct {
 	ToAddress   string `json:"toaddress"`
 	Amount      uint64 `json:"amount,omitempty"`
 }
-
-/*
-// WalletMeta is 지갑 데이터 구조체
-type WalletMeta struct {
-	Publickey  string `json:"publickey,omitempty"`
-	Txtime     string `json:"txtime,omitempty"`
-	Nowtime    int64  `json:"nowtime,omitempty"`
-	Transdata  string `json:"transdata,omitempty"`
-	Transjdata string `json:"transjdata,omitempty"`
-	Sigmsg     string `json:"sigmsg,omitempty"`
-}
-*/
