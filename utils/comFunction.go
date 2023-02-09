@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
+	"runtime"
 	"strconv"
+	"strings"
 
 	model "github.com/STO-BlockChain/ChainCode-Common/model"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
@@ -214,4 +217,32 @@ func GetFundAdmin(stub shim.ChaincodeStubInterface, fundid string) string {
 	fmt.Println("FUND ADMIN:", fundid, address)
 
 	return address
+}
+
+func GetCallerInfo() (funcName string, line int) {
+	_, fn, line, ok := runtime.Caller(2)
+	if ok {
+		if index := strings.LastIndex(fn, "/"); index >= 0 {
+			fn = fn[index+1:]
+		}
+	} else {
+		fn = "???"
+		line = 1
+	}
+
+	return fn, line
+}
+
+func InfoLogger(infoLog string) {
+	funcName, line := GetCallerInfo()
+	resultLog := fmt.Sprintf("%s:%d: %s", funcName, line, infoLog)
+	log.SetPrefix("[INFO] ")
+	log.Println(resultLog)
+}
+
+func ErrorLogger(errorLog string) {
+	funcName, line := GetCallerInfo()
+	resultLog := fmt.Sprintf("%s:%d: %s", funcName, line, errorLog)
+	log.SetPrefix("[ERROR] ")
+	log.Println(resultLog)
 }
