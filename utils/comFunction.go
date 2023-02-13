@@ -53,6 +53,19 @@ func DoBurnAndMint(stub shim.ChaincodeStubInterface, funcName string, tokenName 
 	return response
 }
 
+// DoTokenFunc is 다른 체인코드의 함수 호출 / 첫 args는 호출할 함수의 이름 / mint 호출 예시) DoTokenFunc(stub, "fundst", "mint", "BV8oLGiPd8qTGsEqqJ7b9V7X29VuQcea2C", "100")
+func DoTokenFunc(stub shim.ChaincodeStubInterface, tokenName string, args ...string) peer.Response {
+
+	invokeArgs := make([][]byte, len(args))
+	for i, arg := range args {
+		invokeArgs[i] = []byte(arg)
+	}
+
+	channel := stub.GetChannelID()
+	response := stub.InvokeChaincode(tokenName, invokeArgs, channel)
+	return response
+}
+
 // DoTransferMulti is 토큰 TransferMulti
 func DoTransferMulti(stub shim.ChaincodeStubInterface, callerAddress string, stTransferMetaArr []model.TransferMeta, tokenName string) peer.Response {
 
