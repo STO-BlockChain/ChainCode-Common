@@ -44,10 +44,10 @@ func DoBalanceOf(stub shim.ChaincodeStubInterface, toaddress string, tokenName s
 	return response
 }
 
-// DoTokenFunc is 토큰 함수 실행 (burn, mint)
-func DoTokenFunc(stub shim.ChaincodeStubInterface, funcName string, transParam string, tokenName string) peer.Response {
+// DoBurnAndMint is 토큰 burn, mint
+func DoBurnAndMint(stub shim.ChaincodeStubInterface, funcName string, tokenName string, address string, amount string) peer.Response {
 	chainCodeFunc := funcName
-	invokeArgs := ToChaincodeArgs(chainCodeFunc, transParam)
+	invokeArgs := ToChaincodeArgs(chainCodeFunc, address, amount)
 	channel := stub.GetChannelID()
 	response := stub.InvokeChaincode(tokenName, invokeArgs, channel)
 	return response
